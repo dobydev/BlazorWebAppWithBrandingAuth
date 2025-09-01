@@ -1,0 +1,16 @@
+﻿.footerStyle {
+    background-color: var(--gd-theme-850); /* Applies a theme-specific background color 100-900 light-darkest */
+}
+
+.footerStyle a{
+    color: var(--gd-theme-200);
+}
+
+.footerStyle a:hover{
+    color: var(--gd-theme-core);
+}
+
+
+.bi {
+   font-size: 1.5rem;
+}
