@@ -13,8 +13,9 @@
 <PageTitle>Manage your external logins</PageTitle>
 
 <StatusMessage />
+<div class="container-xxl my-3">
 @if (currentLogins?.Count > 0)
-{
+{   
     <h3>Registered Logins</h3>
     <table class="table">
         <tbody>
@@ -62,7 +63,7 @@
         </div>
     </form>
 }
-
+</div>
 @code {
     public const string LinkLoginCallbackAction = "LinkLoginCallback";
 

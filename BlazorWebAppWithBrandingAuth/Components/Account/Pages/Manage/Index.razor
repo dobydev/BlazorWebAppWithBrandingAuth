@@ -10,7 +10,7 @@
 @inject IdentityRedirectManager RedirectManager
 
 <PageTitle>Profile</PageTitle>
-
+<div class="container-xxl my-3">
 <h3>Profile</h3>
 <StatusMessage />
 
@@ -23,6 +23,16 @@
                 <input type="text" value="@username" id="username" class="form-control" placeholder="Choose your username." disabled />
                 <label for="username" class="form-label">Username</label>
             </div>
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.FirstName" id="Input.FirstName" class="form-control" placeholder=" Please enter your first name." />
+                    <label for="Input.firstName" class="form-label">First Name</label>
+                    <ValidationMessage For="() => Input.FirstName" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.LastName" id="Input.LastName" class="form-control" placeholder=" Please enter your last name." />
+                    <label for="Input.lastName" class="form-label">Last Name</label>
+                    <ValidationMessage For="() => Input.LastName" class="text-danger" />
+                </div>
             <div class="form-floating mb-3">
                 <InputText @bind-Value="Input.PhoneNumber" id="Input.PhoneNumber" class="form-control" placeholder="Enter your phone number" />
                 <label for="Input.PhoneNumber" class="form-label">Phone number</label>
@@ -32,11 +42,14 @@
         </EditForm>
     </div>
 </div>
+</div>
 
 @code {
     private ApplicationUser user = default!;
     private string? username;
     private string? phoneNumber;
+    private string? firstName;
+    private string? lastName;
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
@@ -49,8 +62,12 @@
         user = await UserAccessor.GetRequiredUserAsync(HttpContext);
         username = await UserManager.GetUserNameAsync(user);
         phoneNumber = await UserManager.GetPhoneNumberAsync(user);
+        firstName = user.FirstName;
+        lastName = user.LastName;
 
         Input.PhoneNumber ??= phoneNumber;
+        Input.FirstName ??= firstName;
+        Input.LastName ??= lastName;
     }
 
     private async Task OnValidSubmitAsync()
@@ -64,12 +81,35 @@
             }
         }
 
+        if(firstName != Input.FirstName || lastName != Input.LastName)
+        {
+            user.FirstName = Input.FirstName;
+            user.LastName = Input.LastName;
+
+            var updateResult = await UserManager.UpdateAsync(user);
+
+            if(!updateResult.Succeeded)
+            {
+                RedirectManager.RedirectToCurrentPageWithStatus("Error: failed to update profile.", HttpContext);
+            }
+
+        }
+
+
         await SignInManager.RefreshSignInAsync(user);
         RedirectManager.RedirectToCurrentPageWithStatus("Your profile has been updated", HttpContext);
     }
 
     private sealed class InputModel
     {
+        [Required]
+        [Display(Name = "First Name")]
+        public string? FirstName { get; set; }
+
+        [Required]
+        [Display(Name = "Last Name")]
+        public string? LastName { get; set; }
+
         [Phone]
         [Display(Name = "Phone number")]
         public string? PhoneNumber { get; set; }

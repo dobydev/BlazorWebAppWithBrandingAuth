@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
-@layout BlazorWebAppWithBrandingAuth.Components.Layout.MainLayout
-
+@layout BlazorWebAppWithBrandingAuth.Components.Layout.TopNavLayout
+<div class="container-xxl my-3"> 
 <h1>Manage your account</h1>
 
 <div>
@@ -11,7 +11,11 @@
             <ManageNavMenu />
         </div>
         <div class="col-lg-9">
-            @Body
+            <div class="container-xxl my-3"> 
+                @Body
+            </div>
+           
         </div>
     </div>
+</div>
 </div>

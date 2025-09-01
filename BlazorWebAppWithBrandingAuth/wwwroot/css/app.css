@@ -1,16 +1,29 @@
+:root {
+    --gd-title-font: 'Bebas Neue', sans-serif;
+    --gd-body-font: 'Montserrat', sans-serif;
+    --gd-dark-color: #212121;
+    --gd-light-color: #deeefb;
+    --gd-font-size: 1.1rem;
+    --gd-title-color: var(--gd-dark-color);
+}
+
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: var(--gd-body-font);
+    font-size: var(--gd-font-size);
+    height: 100%;
+    min-height: 100vh;
 }
 
-a, .btn-link {
-    color: #006bb7;
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--gd-title-font);
 }
 
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: var(--gd-title-font);
 }
+
+
+/* Defaults Blazor Style */
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;

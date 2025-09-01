@@ -12,6 +12,7 @@
 <PageTitle>Two-factor authentication (2FA)</PageTitle>
 
 <StatusMessage />
+<div class="container-xxl my-3">
 <h3>Two-factor authentication (2FA)</h3>
 @if (canTrack)
 {
@@ -69,6 +70,7 @@ else
         <p>You must accept the policy before you can enable two factor authentication.</p>
     </div>
 }
+</div>
 
 @code {
     private bool canTrack;

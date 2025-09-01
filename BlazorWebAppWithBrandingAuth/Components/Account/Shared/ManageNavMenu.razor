@@ -2,7 +2,7 @@
 @using BlazorWebAppWithBrandingAuth.Data
 
 @inject SignInManager<ApplicationUser> SignInManager
-
+<div class="container-xxl my-3">
 <ul class="nav nav-pills flex-column">
     <li class="nav-item">
         <NavLink class="nav-link" href="Account/Manage" Match="NavLinkMatch.All">Profile</NavLink>
@@ -26,6 +26,7 @@
         <NavLink class="nav-link" href="Account/Manage/PersonalData">Personal data</NavLink>
     </li>
 </ul>
+</div>
 
 @code {
     private bool hasExternalLogins;

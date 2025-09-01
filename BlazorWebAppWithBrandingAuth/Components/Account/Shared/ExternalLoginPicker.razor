@@ -4,7 +4,7 @@
 
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IdentityRedirectManager RedirectManager
-
+<div class="container-xxl my-3">
 @if (externalLogins.Length == 0)
 {
     <div>
@@ -29,6 +29,7 @@ else
         </div>
     </form>
 }
+</div>
 
 @code {
     private AuthenticationScheme[] externalLogins = [];
