@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -13,6 +14,12 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents()
     .AddAuthenticationStateSerialization(options => options.SerializeAllClaims = true);
+
+
+
+builder.Services.AddControllers();
+builder.Services.AddHttpClient();
+builder.Services.AddOutputCache();
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
@@ -58,6 +65,9 @@ app.UseHttpsRedirection();
 
 
 app.UseAntiforgery();
+
+app.UseOutputCache();
+app.MapControllers();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()

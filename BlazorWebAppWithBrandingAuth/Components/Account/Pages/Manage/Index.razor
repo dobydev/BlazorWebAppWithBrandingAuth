@@ -1,13 +1,18 @@
 ﻿@page "/Account/Manage"
 
 @using System.ComponentModel.DataAnnotations
+@using System.Net.Mime
 @using Microsoft.AspNetCore.Identity
 @using BlazorWebAppWithBrandingAuth.Data
+@using BlazorWebAppWithBrandingAuth.Helpers
+@using BlazorWebAppWithBrandingAuth.Models
+@using Microsoft.EntityFrameworkCore
 
 @inject UserManager<ApplicationUser> UserManager
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
+@inject ApplicationDbContext Context
 
 <PageTitle>Profile</PageTitle>
 <div class="container-xxl my-3">
@@ -16,7 +21,7 @@
 
 <div class="row">
     <div class="col-xl-6">
-        <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post">
+        <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post" enctype="multipart/form-data">
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert" />
             <div class="form-floating mb-3">
@@ -38,6 +43,15 @@
                 <label for="Input.PhoneNumber" class="form-label">Phone number</label>
                 <ValidationMessage For="() => Input.PhoneNumber" class="text-danger" />
             </div>
+            
+
+            <img src="@profilePictureUrl" class="img-fluid p-3 rounded" id="profilePicPreview" />
+            <div class="mb-3">
+                <label for="Input.ProfilePicture" class="form-label">Profile Picture</label>
+                <input type="file" class="form-control" name="Input.ProfilePicture" accept=".jpg, .jpeg, .png, .svg, .gif"
+                       onchange="document.getElementById('profilePicPreview').src = window.URL.createObjectURL(this.files[0])" />
+            </div>
+
             <button type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
         </EditForm>
     </div>
@@ -50,6 +64,7 @@
     private string? phoneNumber;
     private string? firstName;
     private string? lastName;
+    private string? profilePictureUrl;
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
@@ -68,10 +83,46 @@
         Input.PhoneNumber ??= phoneNumber;
         Input.FirstName ??= firstName;
         Input.LastName ??= lastName;
+
+        profilePictureUrl = user.ProfilePictureId.HasValue ? $"/uploads/{user.ProfilePictureId}" : ImageHelper.DefaultProfilePictureUrl;
     }
 
     private async Task OnValidSubmitAsync()
+
     {
+
+
+        if (Input.ProfilePicture is not null)
+        {
+            try
+            {
+
+                //save the uploaded picture
+                ImageUpload newProfilePic = await ImageHelper.GetImageUploadAsync(Input.ProfilePicture);
+                Context.Add(newProfilePic);
+
+                //delete the old picture
+                ImageUpload? oldProfilePic = await Context.Images.FirstOrDefaultAsync(i => i.Id == user.ProfilePictureId);
+                if (oldProfilePic is not null)
+                {
+                    Context.Images.Remove(oldProfilePic);
+                }
+
+                //update the user's profile picture
+                user.ProfilePictureId = newProfilePic.Id;
+                Context.Users.Update(user);
+
+                //save the changes
+                await Context.SaveChangesAsync();
+            }
+            catch
+            {
+                RedirectManager.RedirectToCurrentPageWithStatus("The image could not be uploaded", HttpContext);
+                return;
+            }
+        }
+
+
         if (Input.PhoneNumber != phoneNumber)
         {
             var setPhoneResult = await UserManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
@@ -113,5 +164,7 @@
         [Phone]
         [Display(Name = "Phone number")]
         public string? PhoneNumber { get; set; }
+
+        public IFormFile? ProfilePicture { get; set; }
     }
 }
